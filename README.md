@@ -356,11 +356,13 @@ Test 1 : création de l'opération somme (201 + en-tête `Location`, corps de la
 
 Test 2 : création de l'opération division (201, id 2, résultat 3.5) :
 
-![Test 2](captures/f3_test2.png)
+
+
+<img width="1327" height="305" alt="Capture d&#39;écran 2026-10-24 010126" src="https://github.com/user-attachments/assets/d0699509-007e-430e-af18-c693241e0c0f" />
 
 Test 3 : liste des opérations (200, tableau de 2 opérations) :
 
-![Test 3](captures/f3_test3.png)
+<img width="1216" height="227" alt="Capture d&#39;écran 2026-10-24 010134" src="https://github.com/user-attachments/assets/3858e16f-7648-4038-892f-7a8e799bf6aa" />
 
 Test 7 : opérateur inconnu (400) :
 
@@ -374,7 +376,7 @@ Tests 4, 5 et 6 : *(captures à ajouter)*
 
 **Création avec Postman** : `POST /operations` avec le corps `{"operateur":"somme","a":8,"b":2}` renvoie `201 Created`. L'identifiant obtenu est 3, car deux opérations avaient déjà été créées avec curl :
 
-![Postman POST](captures/f3_postman_post.png)
+![Postman POST]<img width="912" height="857" alt="Capture d&#39;écran 2026-10-24 005147" src="https://github.com/user-attachments/assets/8cc3fa87-bed1-4504-94c5-3a02b9ddaf3a" />
 
 Liste des opérations après la création Postman (3 opérations) :
 
