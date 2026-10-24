@@ -309,7 +309,6 @@ curl -i -X POST -H "Content-Type: application/json" -d '{"operateur":"somme","a"
 ```
 <img width="1681" height="337" alt="Capture d&#39;écran 2026-10-24 123453" src="https://github.com/user-attachments/assets/36f8484c-22b7-4b54-95bc-503e6eca5c72" />
 
-
 ```bash
 curl -i -X POST -H "Content-Type: application/json" -d "{\"operateur\":\"somme\",\"a\":8,\"b\":2}" "http://localhost:8080/RestWebApp/api/operations"
 ```
