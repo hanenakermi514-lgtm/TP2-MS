@@ -307,7 +307,7 @@ Après avoir reconstruit et redéployé l'application, les requêtes suivantes s
 ```bash
 curl -i -X POST -H "Content-Type: application/json" -d '{"operateur":"somme","a":8,"b":2}' "http://localhost:8080/RestWebApp/api/operations"
 ```
-<img width="1583" height="292" alt="Capture d&#39;écran 2026-10-24 004349" src="https://github.com/user-attachments/assets/28be6142-d024-4a07-a5fd-4d83af56a774" />
+<img width="1681" height="337" alt="Capture d&#39;écran 2026-10-24 123453" src="https://github.com/user-attachments/assets/36f8484c-22b7-4b54-95bc-503e6eca5c72" />
 
 ```
 
@@ -317,7 +317,8 @@ curl -i -X POST -H "Content-Type: application/json" -d '{"operateur":"somme","a"
 curl -i -X POST -H "Content-Type: application/json" -d "{\"operateur\":\"somme\",\"a\":8,\"b\":2}" "http://localhost:8080/RestWebApp/api/operations"
 ```
 
-<img width="1512" height="647" alt="Capture d&#39;écran 2026-10-24 011459" src="https://github.com/user-attachments/assets/371e3a33-b234-4135-a1c7-5cfab8ea76e9" />
+<img width="1867" height="277" alt="Capture d&#39;écran 2026-10-24 123518" src="https://github.com/user-attachments/assets/bd06255b-f9aa-4ba0-9e4c-bc04e620ab9e" />
+
 L'option `-X` choisit le verbe HTTP et l'option `-d` fournit le corps de la requête.
 
 **Création avec curl sous PowerShell (méthode utilisée pour les tests)** : pour éviter les problèmes de guillemets, les corps JSON sont d'abord écrits dans des fichiers, puis envoyés avec `--data @fichier` :
@@ -354,30 +355,12 @@ curl.exe -i -X POST -H "Content-Type: application/json" --data "@body1.json" $u
 
 **Captures des tests (curl)**
 
-Test 1 : création de l'opération somme (201 + en-tête `Location`, corps de la réponse en haut de la capture du test 2) :
 
-<img width="1055" height="200" alt="Capture d&#39;écran 2026-10-24 005844" src="https://github.com/user-attachments/assets/cbf7577e-4a77-4a4b-bc55-e12f3633b713" />
+<img width="1518" height="752" alt="Capture d&#39;écran 2026-10-24 123148" src="https://github.com/user-attachments/assets/a5caa72e-41d7-49ca-b41e-e1a7c02fbe87" />
 
+<img width="1711" height="852" alt="Capture d&#39;écran 2026-10-24 123200" src="https://github.com/user-attachments/assets/5faa5b3a-a9e7-4e37-8761-58a3d4d41185" />
 
-Test 2 : création de l'opération division (201, id 2, résultat 3.5) :
-
-<img width="1327" height="305" alt="Capture d&#39;écran 2026-10-24 010126" src="https://github.com/user-attachments/assets/d0699509-007e-430e-af18-c693241e0c0f" />
-
-Test 3 : liste des opérations (200, tableau de 2 opérations) :
-
-<img width="1216" height="227" alt="Capture d&#39;écran 2026-10-24 010134" src="https://github.com/user-attachments/assets/3858e16f-7648-4038-892f-7a8e799bf6aa" />
-
-Test 4 :
-<img width="1847" height="265" alt="Capture d&#39;écran 2026-10-24 005743" src="https://github.com/user-attachments/assets/321309e0-96d7-4103-ba06-47bc1dfbebd4" />
-
-
-Tests 5:
-<img width="1392" height="225" alt="Capture d&#39;écran 2026-10-24 010152" src="https://github.com/user-attachments/assets/0dcbf259-c512-44b8-8300-2b1d767db9e1" />
-Tests 6:
-<img width="1752" height="203" alt="Capture d&#39;écran 2026-10-24 010207" src="https://github.com/user-attachments/assets/f3d97dca-fb9b-4151-932e-9b63b7609237" />
-
-Tests 7:
-<img width="1440" height="215" alt="Capture d&#39;écran 2026-10-24 010200" src="https://github.com/user-attachments/assets/fd09418d-7021-482e-941c-41424df9a1f7" />
+<img width="1313" height="190" alt="Capture d&#39;écran 2026-10-24 123212" src="https://github.com/user-attachments/assets/c6d61c42-31b2-4e21-8e8c-e26a4a50f7fe" />
 
 
 
@@ -424,7 +407,10 @@ public Response modifier(@PathParam("id") int id, Operation op) {
 | `PUT /operations/99` | `{"operateur":"somme","a":1,"b":1}` | 404 | | |
 | `PUT /operations/1` | `{"operateur":"division","a":1,"b":0}` | 400 | | |
 
-*
+<img width="1588" height="732" alt="Capture d&#39;écran 2026-10-24 122855" src="https://github.com/user-attachments/assets/3526cd5a-6c72-47ab-8c3f-9fa458c949c3" />
+
+<img width="1485" height="683" alt="Capture d&#39;écran 2026-10-24 122916" src="https://github.com/user-attachments/assets/6d043a63-0afe-4891-a0bf-a8e9f66e7b8d" />
+
 ### F.5 DELETE : supprimer
 
 Imports : `jakarta.ws.rs.DELETE`.
