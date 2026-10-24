@@ -1,0 +1,479 @@
+# TP – Service web REST « Calculatrice » avec JAX-RS (Jersey) et Tomcat 10.1
+
+**Nom / Prénom :** …………………………
+**Groupe :** …………………………
+**Date :** …………………………
+
+## Sommaire
+
+1. Présentation du projet
+2. Partie A : Conception
+3. Partie C : Premier service (somme)
+4. Partie D : Compléter la calculatrice
+5. Partie E : JSON
+6. Partie F : Ressource `operations` (POST, GET, PUT, DELETE)
+7. Questions de synthèse
+8. Conclusion
+
+---
+
+## 1. Présentation du projet
+
+Le projet est une application web Maven (`packaging = war`) qui expose une calculatrice sous forme de service REST avec **JAX-RS** (implémentation **Jersey 3.1.9**), déployée dans **Tomcat 10.1** (Jakarta EE 10).
+
+| Élément | Valeur |
+|---|---|
+| JDK | 17 |
+| Maven | 3.9+ |
+| Serveur | Apache Tomcat 10.1.x |
+| Artefact | `target/RestWebApp.war` |
+| URL de base | `http://localhost:8082/RestWebApp/api` (Tomcat configuré sur le port **8082** sur ma machine ; 8080 par défaut) |
+
+### Structure du projet
+
+```
+RestWebApp/
+├── pom.xml
+└── src/main/java/com/exemple/rest/
+    ├── Calculatrice.java       (logique métier)
+    ├── RestApplication.java    (@ApplicationPath("/api"))
+    ├── CalculRest.java         (ressource /calcul)
+    ├── Resultat.java           (objet JSON des calculs détaillés)
+    ├── Operation.java          (objet de l'historique)
+    └── OperationRest.java      (ressource /operations)
+```
+
+### Construction et déploiement
+
+```bash
+mvn clean package        # produit target/RestWebApp.war
+```
+
+Déploiement : copie du `.war` dans `TOMCAT_HOME/webapps` ou configuration Tomcat d'IntelliJ (Run > Edit Configurations, onglet Deployment, contexte d'application `/RestWebApp`).
+
+---
+
+## 2. Partie A : Conception du service
+
+**Q1. Pourquoi les calculs directs utilisent-ils GET et non POST ?**
+Un calcul direct est une opération de **lecture** : le client demande un résultat et rien n'est créé ni modifié sur le serveur. GET est le verbe prévu pour cela (sûr, idempotent, pouvant être mis en cache, et l'URL peut être testée directement dans un navigateur). POST sert à créer une ressource ou à déclencher un effet de bord.
+
+**Q2. Comment s'appelle la partie située après `?` dans `/calcul/somme?a=2&b=3` ?**
+C'est la **chaîne de requête** (*query string*), composée des **paramètres de requête** (*query parameters*) `a=2` et `b=3`.
+
+**Q3. Différence entre `/operations` et `/operations/3` ?**
+`/operations` désigne la **collection** de toutes les opérations (GET la liste, POST en crée une). `/operations/3` désigne **une ressource précise** de cette collection : l'opération d'identifiant 3 (GET la lit, PUT la modifie, DELETE la supprime).
+
+**Q4. Statut HTTP pour `/operations/99` inexistante ?**
+**404 Not Found** (ressource non trouvée).
+
+---
+
+## 3. Partie C : Premier service REST (somme)
+
+### Code
+
+`Calculatrice.java`, `RestApplication.java` et `CalculRest.java` (méthode `somme`) sont ceux de l'énoncé (voir le dossier `src`).
+
+**B.1 Création du projet (IntelliJ, générateur Jakarta EE)**
+
+![Nouveau projet](captures/b1_nouveau_projet.png)
+
+**B.3 Fichier `pom.xml`**
+
+![pom.xml](captures/b3_pom.png)
+
+**C.1 Classe `Calculatrice`**
+
+![Calculatrice](captures/c1_calculatrice.png)
+
+**C.2 Classe `RestApplication`**
+
+![RestApplication](captures/c2_restapplication.png)
+
+**C.4 Construction : fichier `target/RestWebApp.war`**
+
+![War](captures/c4_war.png)
+
+**C.5 Configuration Tomcat (onglet Deployment)**
+
+![Configuration Tomcat](captures/c5_config_tomcat.png)
+
+> Tomcat 10.1.61 est lancé sur le port 8082 : les URL des captures utilisent donc `localhost:8082`.
+
+### Tests de l'étape C.7
+
+| Outil | Requête | Résultat attendu | Résultat obtenu |
+|---|---|---|---|
+| Navigateur | `GET /RestWebApp/api/calcul/somme?a=2&b=3` | `5` | `5` (voir capture) |
+| curl | `curl.exe -i "http://localhost:8082/RestWebApp/api/calcul/somme?a=2&b=3"` | `HTTP/1.1 200`, `Content-Type: text/plain`, corps `5` | `HTTP/1.1 200`, `Content-Type: text/plain`, corps `5` (voir capture) |
+| Postman | GET + Send | `5`, `200 OK` | `5`, `200 OK` (voir capture) |
+
+**Navigateur**
+
+![Navigateur 1](captures/c7_navigateur_1.png)
+
+![Navigateur 2](captures/c7_navigateur_2.png)
+
+**curl**
+
+![curl somme](captures/c7_curl_somme.png)
+
+**Postman (GET)**
+
+![Postman GET](captures/c7_postman_get_200.png)
+
+**Question C.1. Avec POST au lieu de GET, quel statut ? Pourquoi ?**
+Le statut obtenu est **405 Method Not Allowed**. L'URI `/calcul/somme` existe, mais la méthode Java n'est annotée que par `@GET` : aucune méthode ne répond au verbe POST pour cette URI. Jersey renvoie donc 405 (et non 404, car la ressource existe).
+
+![Postman POST : 405 Method Not Allowed](captures/c1_postman_post_405.png)
+
+---
+
+## 4. Partie D : Compléter la calculatrice
+
+### D.1 Soustraction et produit
+
+```java
+@GET
+@Path("/soustraction")
+@Produces(MediaType.TEXT_PLAIN)
+public Response soustraction(@QueryParam("a") int a, @QueryParam("b") int b) {
+    return Response.ok(calculService.soustraction(a, b)).build();
+}
+
+@GET
+@Path("/produit")
+@Produces(MediaType.TEXT_PLAIN)
+public Response produit(@QueryParam("a") int a, @QueryParam("b") int b) {
+    return Response.ok(calculService.produit(a, b)).build();
+}
+```
+
+| Requête | Attendu | Obtenu |
+|---|---|---|
+| `GET /calcul/soustraction?a=10&b=4` | `6` | `6` (200) |
+| `GET /calcul/produit?a=6&b=7` | `42` | `42` (200) |
+
+![curl soustraction](captures/d1_curl_soustraction.png)
+
+![curl produit](captures/d1_curl_produit.png)
+
+### D.2 Division et gestion d'erreur
+
+Méthode `division` de l'énoncé (renvoie 400 si `b == 0`).
+
+| Requête | Statut attendu | Corps attendu | Obtenu |
+|---|---|---|---|
+| `GET /calcul/division?a=7&b=2` | 200 | `3.5` | 200, `3.5` (voir capture) |
+| `GET /calcul/division?a=7&b=0` | 400 | `Erreur : division par 0 impossible` | 400, `Erreur : division par 0 impossible` (voir capture) |
+
+![curl division 7/2](captures/d2_curl_division_200.png)
+
+![curl division 7/0](captures/d2_curl_division_400.png)
+
+### D.3 Observations
+
+| Requête | Statut | Corps |
+|---|---|---|
+| `GET /calcul/somme?a=2` (b absent) | 200 | `2` |
+| `GET /calcul/somme?a=abc&b=3` | 404 | page d'erreur HTML par défaut de Tomcat (« Non trouvé ») |
+
+![curl b absent](captures/d3_curl_b_absent.png)
+
+![curl a non entier](captures/d3_curl_a_abc.png)
+
+**Question D.1. Quelle valeur JAX-RS donne-t-il à un paramètre entier absent ?**
+La **valeur par défaut du type Java** : `0` pour un `int`. Ici `b = 0`, donc `somme?a=2` renvoie `2`. (Avec un type objet comme `Integer`, la valeur serait `null`. On peut aussi imposer une valeur avec `@DefaultValue`.)
+
+**Question D.2. Statut quand le paramètre n'est pas un entier ? La méthode a-t-elle été exécutée ?**
+Le statut est **404 Not Found** : pour `@QueryParam` et `@PathParam`, la spécification JAX-RS renvoie 404 quand la conversion de la chaîne `"abc"` en `int` échoue. La méthode `somme` **n'est pas exécutée** : l'erreur survient pendant l'injection des paramètres, avant l'appel de la méthode.
+
+### D.4 `@PathParam`
+
+```java
+@GET
+@Path("/produit/{a}/{b}")
+@Produces(MediaType.TEXT_PLAIN)
+public Response produitChemin(@PathParam("a") int a, @PathParam("b") int b) {
+    return Response.ok(calculService.produit(a, b)).build();
+}
+```
+
+Test : `GET /calcul/produit/6/7` renvoie `42` (statut 200).
+
+![curl produit chemin](captures/d4_curl_produit_chemin.png)
+
+**Question D.3. Différence entre `@QueryParam` et `@PathParam` ? Laquelle pour `/operations/{id}` ?**
+- `@QueryParam` lit un paramètre placé **après le `?`** (`?a=2&b=3`). Il est généralement **optionnel** et sert à filtrer, paramétrer ou trier.
+- `@PathParam` lit une valeur située **dans le chemin** de l'URI (`/produit/6/7`). Il fait partie de l'identité de la ressource et est **obligatoire** pour que l'URI corresponde.
+
+Pour l'identifiant dans `/operations/{id}` on utilise **`@PathParam("id")`**, car l'identifiant désigne la ressource elle-même.
+
+---
+
+## 5. Partie E : Échanger des données en JSON
+
+`Resultat.java` et la méthode `sommeDetail` sont ceux de l'énoncé.
+
+```bash
+curl -i "http://localhost:8080/RestWebApp/api/calcul/somme/detail?a=2&b=3"
+```
+
+Résultat attendu : `200`, `Content-Type: application/json`, corps `{"a":2,"b":3,"operation":"somme","resultat":5.0}`. Obtenu : statut 200, `Content-Type: application/json`, corps identique.
+
+![curl somme detail](captures/e2_curl_somme_detail.png)
+
+**Question E.1. Qui a effectué la conversion ? D'où viennent les noms ?**
+La conversion objet Java → JSON est faite automatiquement par **Jersey**, grâce à la dépendance `jersey-media-json-binding` (qui s'appuie sur JSON-B / Yasson). Les noms `a`, `b`, `operation`, `resultat` viennent des **propriétés de la classe `Resultat`**, déduites de ses **accesseurs** (`getA()`, `getB()`, `getOperation()`, `getResultat()`). Le constructeur sans argument et les setters servent à la conversion inverse (JSON → objet).
+
+### E.3 En-tête `Accept`
+
+| Requête | Statut attendu | Obtenu |
+|---|---|---|
+| `curl -i -H "Accept: application/json" ".../somme/detail?a=2&b=3"` | 200 | 200 |
+| `curl -i -H "Accept: application/xml" ".../somme/detail?a=2&b=3"` | 406 | 406 (Not Acceptable) |
+
+![Accept JSON : 200](captures/e3_accept_json.png)
+
+![Accept XML : 406](captures/e3_accept_xml.png)
+
+**Question E.2. Pourquoi la seconde requête est-elle refusée ?**
+Le client demande du XML (`Accept: application/xml`) alors que la méthode ne produit que du JSON (`@Produces(MediaType.APPLICATION_JSON)`). Le serveur ne peut pas satisfaire le format demandé et répond **406 Not Acceptable**.
+
+### E.4 Exercice : `divisionDetail`
+
+```java
+@GET
+@Path("/division/detail")
+@Produces(MediaType.APPLICATION_JSON)
+public Response divisionDetail(@QueryParam("a") int a, @QueryParam("b") int b) {
+    if (b == 0) {
+        return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+    Resultat resultat = new Resultat("division", a, b, calculService.division(a, b));
+    return Response.ok(resultat).build();
+}
+```
+
+| Requête | Statut | Corps |
+|---|---|---|
+| `GET /calcul/division/detail?a=7&b=2` | 200 | `{"a":7,"b":2,"operation":"division","resultat":3.5}` |
+| `GET /calcul/division/detail?a=7&b=0` | 400 | aucun corps défini dans la méthode : page d'erreur HTML par défaut de Tomcat |
+
+![curl division detail 7/2](captures/e4_division_detail_200.png)
+
+![curl division detail 7/0](captures/e4_division_detail_400.png)
+
+---
+
+## 6. Partie F : Ressource `operations`
+
+Les données sont stockées en mémoire (`ConcurrentHashMap` + `AtomicInteger`, attributs `static`).
+
+### F.1 et F.2 Classes `Operation` et `OperationRest`
+
+`Operation.java` (id, operateur, a, b, resultat) et `OperationRest.java` (POST, GET liste, GET par id) sont ceux de l'énoncé.
+
+### F.3 Tester la création et la lecture
+
+Après avoir reconstruit et redéployé l'application, les requêtes suivantes sont envoyées dans l'ordre.
+
+**Création avec curl, sous Linux, macOS ou Git Bash :**
+
+```bash
+curl -i -X POST -H "Content-Type: application/json" -d '{"operateur":"somme","a":8,"b":2}' "http://localhost:8080/RestWebApp/api/operations"
+```
+
+**Création avec curl, dans l'invite de commandes Windows (cmd)** : les guillemets internes doivent être précédés d'une barre oblique inverse :
+
+```bat
+curl -i -X POST -H "Content-Type: application/json" -d "{\"operateur\":\"somme\",\"a\":8,\"b\":2}" "http://localhost:8080/RestWebApp/api/operations"
+```
+
+L'option `-X` choisit le verbe HTTP et l'option `-d` fournit le corps de la requête.
+
+**Création avec curl sous PowerShell (méthode utilisée pour les tests)** : pour éviter les problèmes de guillemets, les corps JSON sont d'abord écrits dans des fichiers, puis envoyés avec `--data @fichier` :
+
+```powershell
+Set-Content body1.json '{"operateur":"somme","a":8,"b":2}'
+Set-Content body2.json '{"operateur":"division","a":7,"b":2}'
+Set-Content body6.json '{"operateur":"division","a":7,"b":0}'
+Set-Content body7.json '{"operateur":"racine","a":9,"b":0}'
+$u = "http://localhost:8082/RestWebApp/api/operations"
+curl.exe -i -X POST -H "Content-Type: application/json" --data "@body1.json" $u
+```
+
+![Préparation des corps JSON](captures/f3_preparation_corps.png)
+
+**Création avec Postman :**
+
+1. Choisir le verbe `POST` et l'URL `http://localhost:8080/RestWebApp/api/operations`.
+2. Ouvrir l'onglet **Body**, sélectionner **raw**, puis le type **JSON**.
+3. Saisir le corps `{"operateur":"somme","a":8,"b":2}` et cliquer sur **Send**.
+
+**Série de tests** (toutes les URI sont à préfixer par `http://localhost:8082/RestWebApp/api` sur ma machine) :
+
+| N° | Requête | Corps envoyé | Statut attendu | Réponse attendue | Statut obtenu | Réponse obtenue |
+|---|---|---|---|---|---|---|
+| 1 | `POST /operations` | `{"operateur":"somme","a":8,"b":2}` | 201 | `{"a":8,"b":2,"id":1,"operateur":"somme","resultat":10.0}` et un en-tête `Location` se terminant par `/operations/1` | 201 | `{"a":8,"b":2,"id":1,"operateur":"somme","resultat":10.0}` et `Location: http://localhost:8082/RestWebApp/api/operations/1` |
+| 2 | `POST /operations` | `{"operateur":"division","a":7,"b":2}` | 201 | Opération d'identifiant 2, de résultat 3.5 | 201 | `{"a":7,"b":2,"id":2,"operateur":"division","resultat":3.5}` et `Location: …/operations/2` |
+| 3 | `GET /operations` | Aucun | 200 | Tableau JSON contenant les deux opérations | 200 | `[{"a":8,"b":2,"id":1,"operateur":"somme","resultat":10.0},{"a":7,"b":2,"id":2,"operateur":"division","resultat":3.5}]` |
+| 4 | `GET /operations/2` | Aucun | 200 | L'opération d'identifiant 2 | | |
+| 5 | `GET /operations/99` | Aucun | 404 | Corps vide | | |
+| 6 | `POST /operations` | `{"operateur":"division","a":7,"b":0}` | 400 | `{"erreur":"Calcul impossible"}` | | |
+| 7 | `POST /operations` | `{"operateur":"racine","a":9,"b":0}` | 400 | `{"erreur":"Calcul impossible"}` | 400 | `{"erreur":"Calcul impossible"}` |
+
+**Captures des tests (curl)**
+
+Test 1 : création de l'opération somme (201 + en-tête `Location`, corps de la réponse en haut de la capture du test 2) :
+
+![Test 1](captures/f3_test1.png)
+
+Test 2 : création de l'opération division (201, id 2, résultat 3.5) :
+
+![Test 2](captures/f3_test2.png)
+
+Test 3 : liste des opérations (200, tableau de 2 opérations) :
+
+![Test 3](captures/f3_test3.png)
+
+Test 7 : opérateur inconnu (400) :
+
+![Test 7](captures/f3_test7.png)
+
+Tests 4, 5 et 6 : *(captures à ajouter)*
+
+**Complément : lecture de l'opération 1** (`GET /operations/1`, 200) :
+
+![GET operations/1](captures/f3_get_operation_1.png)
+
+**Création avec Postman** : `POST /operations` avec le corps `{"operateur":"somme","a":8,"b":2}` renvoie `201 Created`. L'identifiant obtenu est 3, car deux opérations avaient déjà été créées avec curl :
+
+![Postman POST](captures/f3_postman_post.png)
+
+Liste des opérations après la création Postman (3 opérations) :
+
+![GET operations après Postman](captures/f3_get_operations_apres_postman.png)
+
+### F.4 PUT : modifier
+
+Imports : `jakarta.ws.rs.PUT`.
+
+```java
+@PUT
+@Path("/{id}")
+@Consumes(MediaType.APPLICATION_JSON)
+public Response modifier(@PathParam("id") int id, Operation op) {
+    if (!OPERATIONS.containsKey(id)) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    if (!calculer(op)) {
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity("{\"erreur\":\"Calcul impossible\"}")
+                .build();
+    }
+    op.setId(id);
+    OPERATIONS.put(id, op);
+    return Response.ok(op).build();
+}
+```
+
+**Tests F.4**
+
+| Requête | Corps | Statut attendu | Statut obtenu | Corps obtenu |
+|---|---|---|---|---|
+| `PUT /operations/1` | `{"operateur":"produit","a":8,"b":2}` | 200, résultat `16.0` | | |
+| `GET /operations/1` | – | 200, résultat `16.0` | | |
+| `PUT /operations/99` | `{"operateur":"somme","a":1,"b":1}` | 404 | | |
+| `PUT /operations/1` | `{"operateur":"division","a":1,"b":0}` | 400 | | |
+
+*(captures F.4)*
+
+### F.5 DELETE : supprimer
+
+Imports : `jakarta.ws.rs.DELETE`.
+
+```java
+@DELETE
+@Path("/{id}")
+public Response supprimer(@PathParam("id") int id) {
+    Operation supprimee = OPERATIONS.remove(id);
+    if (supprimee == null) {
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    return Response.noContent().build();
+}
+```
+
+**Tests F.5**
+
+| Requête | Statut attendu | Statut obtenu | Corps obtenu |
+|---|---|---|---|
+| `DELETE /operations/1` | 204 | | |
+| `GET /operations/1` | 404 | | |
+| `DELETE /operations/1` | 404 | | |
+
+*(captures F.5)*
+
+---
+
+---
+
+## 7. Questions de synthèse
+
+### 1. Tableau de l'étape A.1 avec les codes de statut
+
+| Verbe | URI | Rôle | Codes de statut possibles |
+|---|---|---|---|
+| GET | `/calcul/somme?a=2&b=3` | Retourne a + b | 200 ; 404 si un paramètre n'est pas un entier |
+| GET | `/calcul/soustraction?a=2&b=3` | Retourne a − b | 200 ; 404 si paramètre invalide |
+| GET | `/calcul/produit?a=2&b=3` | Retourne a × b | 200 ; 404 si paramètre invalide |
+| GET | `/calcul/division?a=6&b=3` | Retourne a ÷ b | 200 ; 400 si b = 0 ; 404 si paramètre invalide |
+| POST | `/operations` | Crée une opération | 201 ; 400 (calcul impossible ou JSON invalide) ; 415 si le corps n'est pas du JSON |
+| GET | `/operations` | Liste toutes les opérations | 200 |
+| GET | `/operations/{id}` | Retourne l'opération id | 200 ; 404 si id inconnu |
+| PUT | `/operations/{id}` | Modifie l'opération id | 200 ; 400 (calcul impossible) ; 404 si id inconnu ; 415 si le corps n'est pas du JSON |
+| DELETE | `/operations/{id}` | Supprime l'opération id | 204 ; 404 si id inconnu |
+
+Codes transverses possibles : 405 (verbe non autorisé sur l'URI), 406 (format `Accept` non supporté), 500 (erreur interne non gérée).
+
+### 2. Annotations JAX-RS utilisées
+
+| Annotation | Rôle |
+|---|---|
+| `@ApplicationPath` | Définit le préfixe commun (`/api`) de toutes les URI et active JAX-RS. |
+| `@Path` | Associe une classe ou une méthode à un fragment d'URI (avec ou sans `{variable}`). |
+| `@GET`, `@POST`, `@PUT`, `@DELETE` | Indiquent le verbe HTTP auquel répond la méthode. |
+| `@Produces` | Indique le(s) type(s) MIME de la réponse (`text/plain`, `application/json`). |
+| `@Consumes` | Indique le type MIME du corps de requête accepté (`application/json`). |
+| `@QueryParam` | Injecte un paramètre de requête (après le `?`). |
+| `@PathParam` | Injecte une valeur située dans le chemin de l'URI. |
+| `@Context` | Injecte un objet du contexte (ici `UriInfo` pour construire l'en-tête `Location`). |
+
+### 3. Différence entre JAX-RS et Jersey
+
+**JAX-RS** (Jakarta RESTful Web Services) est une **spécification** : elle définit l'API (annotations, classes `Response`, `Application`…) mais ne fournit aucun code exécutable. **Jersey** est une **implémentation** de cette spécification (l'implémentation de référence), qui exécute réellement le routage des requêtes, l'injection des paramètres et la conversion JSON. D'autres implémentations existent (RESTEasy, Apache CXF).
+
+### 4. Rôle de Tomcat ; pourquoi un `.war` et non un `.jar` exécutable ?
+
+Tomcat est un **conteneur de servlets** (serveur d'applications web) : il écoute sur le réseau (port 8080), reçoit les requêtes HTTP, les transmet à l'application (ici la servlet de Jersey) et renvoie les réponses. Il gère aussi le cycle de vie de l'application.
+
+Le projet produit un **`.war`** (*Web ARchive*) car c'est le format standard d'une application web destinée à être **déployée dans un conteneur existant** : il contient les classes, les bibliothèques (`WEB-INF/lib`) et la configuration web. Le projet n'a pas de méthode `main` ni de serveur embarqué : ce n'est pas un programme autonome, d'où l'inutilité d'un `.jar` exécutable.
+
+### 5. Stateless et historique des opérations
+
+Le principe *stateless* concerne l'**état de session/conversation du client** : chaque requête doit contenir toutes les informations nécessaires pour être comprise (identifiant dans l'URI, corps, paramètres), sans que le serveur s'appuie sur le souvenir des requêtes précédentes de ce client (pas de session).
+
+L'historique est un **état de la ressource** (des données de l'application, partagées par tous les clients), et non un état du client. Le serveur ne retient rien sur *qui* fait la requête ni sur ce qu'il a fait avant : `GET /operations/2` donne le même résultat quel que soit le client et l'historique de ses appels. Stocker des données de l'application est donc compatible avec le principe stateless (en pratique, elles seraient placées dans une base de données).
+
+### 6. POST répété et PUT répété
+
+- **Deux `POST /operations` identiques** : chaque appel **crée une nouvelle ressource** (ids 1 puis 2, deux réponses 201 avec des `Location` différents). L'effet se **cumule** : POST n'est **pas idempotent**.
+- **Deux `PUT /operations/1` identiques** : le second appel remplace l'opération par le même contenu. L'état final du serveur est **identique** à celui obtenu après un seul appel (200 les deux fois). PUT est **idempotent**.
+
+---
+
+## 8. Conclusion
+
+Ce TP m'a permis de concevoir une API REST (choix des URI et des verbes), de créer un projet Maven de type `war`, d'écrire des ressources avec les annotations JAX-RS, de les déployer dans Tomcat 10.1, d'échanger des données en JSON et de tester le service avec le navigateur, curl et Postman en interprétant les codes de statut (200, 201, 204, 400, 404, 405, 406).
