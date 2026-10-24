@@ -356,7 +356,8 @@ curl.exe -i -X POST -H "Content-Type: application/json" --data "@body1.json" $u
 
 Test 1 : création de l'opération somme (201 + en-tête `Location`, corps de la réponse en haut de la capture du test 2) :
 
-![Test 1](captures/f3_test1.png)
+<img width="1055" height="200" alt="Capture d&#39;écran 2026-10-24 005844" src="https://github.com/user-attachments/assets/cbf7577e-4a77-4a4b-bc55-e12f3633b713" />
+
 
 Test 2 : création de l'opération division (201, id 2, résultat 3.5) :
 
@@ -370,10 +371,12 @@ Test 4 :
 <img width="1847" height="265" alt="Capture d&#39;écran 2026-10-24 005743" src="https://github.com/user-attachments/assets/321309e0-96d7-4103-ba06-47bc1dfbebd4" />
 
 
-Tests 5, 6 et 7 : *(captures à ajouter)*
-<img width="1752" height="203" alt="Capture d&#39;écran 2026-10-24 010207" src="https://github.com/user-attachments/assets/f3d97dca-fb9b-4151-932e-9b63b7609237" />
+Tests 5:
 <img width="1392" height="225" alt="Capture d&#39;écran 2026-10-24 010152" src="https://github.com/user-attachments/assets/0dcbf259-c512-44b8-8300-2b1d767db9e1" />
+Tests 6:
+<img width="1752" height="203" alt="Capture d&#39;écran 2026-10-24 010207" src="https://github.com/user-attachments/assets/f3d97dca-fb9b-4151-932e-9b63b7609237" />
 
+Tests 7:
 <img width="1440" height="215" alt="Capture d&#39;écran 2026-10-24 010200" src="https://github.com/user-attachments/assets/fd09418d-7021-482e-941c-41424df9a1f7" />
 
 
