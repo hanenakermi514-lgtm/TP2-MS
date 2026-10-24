@@ -103,9 +103,8 @@ C'est la **chaîne de requête** (*query string*), composée des **paramètres d
 
 
 **C.5 Configuration Tomcat (onglet Deployment)**
+<img width="997" height="987" alt="Capture d&#39;écran 2026-10-24 111333" src="https://github.com/user-attachments/assets/1e0b5e0c-718b-44eb-820e-174c689b4657" />
 
-<img width="1888" height="573" alt="Capture d&#39;écran 2026-10-23 235042" src="https://github.com/user-attachments/assets/f3845bbd-6852-4710-8a91-0b177563524d" />
-<img width="1236" height="1017" alt="Capture d&#39;écran 2026-10-23 234351" src="https://github.com/user-attachments/assets/b32a1198-5022-41fc-b567-8a1d66b995ee" />
 
 
 > Tomcat 10.1.61 est lancé sur le port 8082 : les URL des captures utilisent donc `localhost:8082`.
