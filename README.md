@@ -102,7 +102,7 @@ C'est la **chaîne de requête** (*query string*), composée des **paramètres d
 <img width="737" height="770" alt="Capture d&#39;écran 2026-10-23 234327" src="https://github.com/user-attachments/assets/c6e53a61-fdf1-4a43-845a-c0a081dcbb99" />
 
 
-**C.5 Configuration Tomcat (onglet Deployment)**
+**C.5 Configuration Tomcat**
 <img width="997" height="987" alt="Capture d&#39;écran 2026-10-24 111333" src="https://github.com/user-attachments/assets/1e0b5e0c-718b-44eb-820e-174c689b4657" />
 
 
