@@ -51,6 +51,7 @@ mvn clean package        # produit target/RestWebApp.war
 ```
 
 Déploiement : copie du `.war` dans `TOMCAT_HOME/webapps` ou configuration Tomcat d'IntelliJ (Run > Edit Configurations, onglet Deployment, contexte d'application `/RestWebApp`).
+<img width="1236" height="1017" alt="Capture d&#39;écran 2026-10-23 234351" src="https://github.com/user-attachments/assets/a3a0ef08-24f7-4538-81ce-1de760695e1b" />
 
 ---
 
@@ -78,7 +79,9 @@ C'est la **chaîne de requête** (*query string*), composée des **paramètres d
 
 **B.1 Création du projet (IntelliJ, générateur Jakarta EE)**
 
-<img width="1236" height="1017" alt="Capture d&#39;écran 2026-10-23 234351" src="https://github.com/user-attachments/assets/24361567-6fe4-46c9-87d6-603e956107ef" />
+<img width="1236" height="1017" alt="Capture d&#39;écran 2026-10-23 234351" src="https://github.com/user-attachments/assets/0900644b-65fd-4045-af6a-ba82e91447fb" />
+<img width="1242" height="977" alt="Capture d&#39;écran 2026-10-23 234150" src="https://github.com/user-attachments/assets/f91da4af-8f56-4e41-96aa-131c09e32f9a" />
+
 
 
 **B.3 Fichier `pom.xml`**
