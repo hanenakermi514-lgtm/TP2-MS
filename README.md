@@ -1,8 +1,8 @@
 # TP – Service web REST « Calculatrice » avec JAX-RS (Jersey) et Tomcat 10.1
 
-**Nom / Prénom :** …………………………
-**Groupe :** …………………………
-**Date :** …………………………
+**Nom / Prénom :** Hanen Akermi
+**Groupe :** MPSRCC1
+**Date :** 24/01/2026
 
 ## Sommaire
 
