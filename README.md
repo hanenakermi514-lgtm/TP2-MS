@@ -306,17 +306,18 @@ Après avoir reconstruit et redéployé l'application, les requêtes suivantes s
 
 ```bash
 curl -i -X POST -H "Content-Type: application/json" -d '{"operateur":"somme","a":8,"b":2}' "http://localhost:8080/RestWebApp/api/operations"
-
+```
 <img width="1583" height="292" alt="Capture d&#39;écran 2026-10-24 004349" src="https://github.com/user-attachments/assets/28be6142-d024-4a07-a5fd-4d83af56a774" />
 
-```<img width="1512" height="647" alt="Capture d&#39;écran 2026-10-24 011459" src="https://github.com/user-attachments/assets/371e3a33-b234-4135-a1c7-5cfab8ea76e9" />
+```
 
 **Création avec curl, dans l'invite de commandes Windows (cmd)** : les guillemets internes doivent être précédés d'une barre oblique inverse :
 
-```bat
+```bash
 curl -i -X POST -H "Content-Type: application/json" -d "{\"operateur\":\"somme\",\"a\":8,\"b\":2}" "http://localhost:8080/RestWebApp/api/operations"
 ```
 
+<img width="1512" height="647" alt="Capture d&#39;écran 2026-10-24 011459" src="https://github.com/user-attachments/assets/371e3a33-b234-4135-a1c7-5cfab8ea76e9" />
 L'option `-X` choisit le verbe HTTP et l'option `-d` fournit le corps de la requête.
 
 **Création avec curl sous PowerShell (méthode utilisée pour les tests)** : pour éviter les problèmes de guillemets, les corps JSON sont d'abord écrits dans des fichiers, puis envoyés avec `--data @fichier` :
