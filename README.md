@@ -306,7 +306,10 @@ Après avoir reconstruit et redéployé l'application, les requêtes suivantes s
 
 ```bash
 curl -i -X POST -H "Content-Type: application/json" -d '{"operateur":"somme","a":8,"b":2}' "http://localhost:8080/RestWebApp/api/operations"
-```
+
+<img width="1583" height="292" alt="Capture d&#39;écran 2026-10-24 004349" src="https://github.com/user-attachments/assets/28be6142-d024-4a07-a5fd-4d83af56a774" />
+
+```<img width="1512" height="647" alt="Capture d&#39;écran 2026-10-24 011459" src="https://github.com/user-attachments/assets/371e3a33-b234-4135-a1c7-5cfab8ea76e9" />
 
 **Création avec curl, dans l'invite de commandes Windows (cmd)** : les guillemets internes doivent être précédés d'une barre oblique inverse :
 
@@ -356,31 +359,34 @@ Test 1 : création de l'opération somme (201 + en-tête `Location`, corps de la
 
 Test 2 : création de l'opération division (201, id 2, résultat 3.5) :
 
-
-
 <img width="1327" height="305" alt="Capture d&#39;écran 2026-10-24 010126" src="https://github.com/user-attachments/assets/d0699509-007e-430e-af18-c693241e0c0f" />
 
 Test 3 : liste des opérations (200, tableau de 2 opérations) :
 
 <img width="1216" height="227" alt="Capture d&#39;écran 2026-10-24 010134" src="https://github.com/user-attachments/assets/3858e16f-7648-4038-892f-7a8e799bf6aa" />
 
-Test 7 : opérateur inconnu (400) :
+Test 4 :
+<img width="1847" height="265" alt="Capture d&#39;écran 2026-10-24 005743" src="https://github.com/user-attachments/assets/321309e0-96d7-4103-ba06-47bc1dfbebd4" />
 
-![Test 7](captures/f3_test7.png)
 
-Tests 4, 5 et 6 : *(captures à ajouter)*
+Tests 5, 6 et 7 : *(captures à ajouter)*
+<img width="1752" height="203" alt="Capture d&#39;écran 2026-10-24 010207" src="https://github.com/user-attachments/assets/f3d97dca-fb9b-4151-932e-9b63b7609237" />
+<img width="1392" height="225" alt="Capture d&#39;écran 2026-10-24 010152" src="https://github.com/user-attachments/assets/0dcbf259-c512-44b8-8300-2b1d767db9e1" />
+
+<img width="1440" height="215" alt="Capture d&#39;écran 2026-10-24 010200" src="https://github.com/user-attachments/assets/fd09418d-7021-482e-941c-41424df9a1f7" />
+
+
 
 **Complément : lecture de l'opération 1** (`GET /operations/1`, 200) :
 
-![GET operations/1](captures/f3_get_operation_1.png)
+![GET operations/1]<img width="1055" height="200" alt="Capture d&#39;écran 2026-10-24 005844" src="https://github.com/user-attachments/assets/472b2574-1b22-4ca5-a707-d038b8ed9d34" />
+
 
 **Création avec Postman** : `POST /operations` avec le corps `{"operateur":"somme","a":8,"b":2}` renvoie `201 Created`. L'identifiant obtenu est 3, car deux opérations avaient déjà été créées avec curl :
 
 ![Postman POST]<img width="912" height="857" alt="Capture d&#39;écran 2026-10-24 005147" src="https://github.com/user-attachments/assets/8cc3fa87-bed1-4504-94c5-3a02b9ddaf3a" />
 
-Liste des opérations après la création Postman (3 opérations) :
 
-![GET operations après Postman](captures/f3_get_operations_apres_postman.png)
 
 ### F.4 PUT : modifier
 
@@ -414,8 +420,7 @@ public Response modifier(@PathParam("id") int id, Operation op) {
 | `PUT /operations/99` | `{"operateur":"somme","a":1,"b":1}` | 404 | | |
 | `PUT /operations/1` | `{"operateur":"division","a":1,"b":0}` | 400 | | |
 
-*(captures F.4)*
-
+*
 ### F.5 DELETE : supprimer
 
 Imports : `jakarta.ws.rs.DELETE`.
@@ -439,8 +444,8 @@ public Response supprimer(@PathParam("id") int id) {
 | `DELETE /operations/1` | 204 | | |
 | `GET /operations/1` | 404 | | |
 | `DELETE /operations/1` | 404 | | |
+<img width="1512" height="647" alt="Capture d&#39;écran 2026-10-24 011459" src="https://github.com/user-attachments/assets/1ce8c826-65be-4ba9-90fe-d6a8c393da09" />
 
-*(captures F.5)*
 
 ---
 
