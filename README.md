@@ -136,7 +136,6 @@ C'est la **chaîne de requête** (*query string*), composée des **paramètres d
 **Question C.1. Avec POST au lieu de GET, quel statut ? Pourquoi ?**
 Le statut obtenu est **405 Method Not Allowed**. L'URI `/calcul/somme` existe, mais la méthode Java n'est annotée que par `@GET` : aucune méthode ne répond au verbe POST pour cette URI. Jersey renvoie donc 405 (et non 404, car la ressource existe).
 
-<img width="1262" height="276" alt="Capture d&#39;écran 2026-10-24 000644" src="https://github.com/user-attachments/assets/fccac562-a8fb-4277-af23-c41e7a79b313" />
 <img width="1028" height="865" alt="Capture d&#39;écran 2026-10-20 145709" src="https://github.com/user-attachments/assets/4bcfe2b4-b73c-45a6-a8b1-00a0c061f126" />
 
 
