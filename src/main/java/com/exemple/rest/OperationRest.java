@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Path("/operations")
 public class OperationRest {
+    git init
     private static final Map<Integer, Operation> OPERATIONS = new ConcurrentSkipListMap<>();
     private static final AtomicInteger COMPTEUR = new AtomicInteger(0);
     private static final String ERREUR = "{\"erreur\":\"Calcul impossible\"}";
