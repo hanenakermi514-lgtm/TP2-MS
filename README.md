@@ -79,7 +79,6 @@ C'est la **chaîne de requête** (*query string*), composée des **paramètres d
 
 **B.1 Création du projet (IntelliJ, générateur Jakarta EE)**
 
-<img width="1236" height="1017" alt="Capture d&#39;écran 2026-10-23 234351" src="https://github.com/user-attachments/assets/0900644b-65fd-4045-af6a-ba82e91447fb" />
 <img width="1242" height="977" alt="Capture d&#39;écran 2026-10-23 234150" src="https://github.com/user-attachments/assets/f91da4af-8f56-4e41-96aa-131c09e32f9a" />
 
 
